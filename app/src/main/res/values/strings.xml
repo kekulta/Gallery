@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="second_activity">Second Activity</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="delete_fragment">Second Fragment</string>
+    <string name="add_fragment">First Fragment</string>
+    <string name="share_transition">Share Transition</string>
+    <string name="image_fragment">Image fragment</string>
+</resources>
