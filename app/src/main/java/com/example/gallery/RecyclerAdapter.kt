@@ -1,14 +1,12 @@
 package com.example.gallery
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class RecyclerAdapter(private val images: List<MainActivity.ImageM>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(private val images: List<MainActivity.Image>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
 

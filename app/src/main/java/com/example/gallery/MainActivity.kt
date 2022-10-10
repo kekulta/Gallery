@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    data class ImageM(val id: String, val name: String, val uri: Uri, var debug: String)
+    data class Image(val id: String, val name: String, val uri: Uri, val debug: String)
 
 }
 

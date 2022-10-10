@@ -1,8 +1,6 @@
 package com.example.gallery
 
-import android.content.ContentResolver
 import android.content.ContentUris
-import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
@@ -53,7 +51,7 @@ class WhiteScreen() : Fragment() {
         startPostponedEnterTransition()
     }
 
-    private fun findImages(): List<MainActivity.ImageM> {
+    private fun findImages(): List<MainActivity.Image> {
         val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
         val projections = arrayOf(
@@ -63,7 +61,7 @@ class WhiteScreen() : Fragment() {
             MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
 
-        val findImages = HashMap<String, MainActivity.ImageM>()
+        val findImages = HashMap<String, MainActivity.Image>()
 
 
         requireActivity().contentResolver.query(
@@ -85,7 +83,7 @@ class WhiteScreen() : Fragment() {
                     )
                     val debug = cursor.getLong(debugIndex).toString()
 
-                    val image = MainActivity.ImageM(
+                    val image = MainActivity.Image(
                         id = mediaId.toString(),
                         name = filename,
                         uri = uri,
