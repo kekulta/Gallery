@@ -35,10 +35,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-        //Log.i(TAG, findImagesInAlbum("0").toString())
-
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             add<BlankFragment>(R.id.fragmentContainerView)

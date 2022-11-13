@@ -1,8 +1,7 @@
 package com.example.gallery
 
-import android.content.ContentUris
+
 import android.os.Bundle
-import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,20 +21,11 @@ import androidx.recyclerview.widget.RecyclerView
 
 class WhiteScreen() : Fragment() {
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
     ): View? {
-
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_white_screen, container, false)
     }
 
@@ -43,62 +33,15 @@ class WhiteScreen() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
+        val imagesSource = ImagesSource(requireActivity().contentResolver)
+
 
         recyclerView.apply {
             layoutManager = GridLayoutManager(activity, 3)
-            adapter = RecyclerAdapter(findImages())
+            adapter = RecyclerAdapter(imagesSource.findImages())
+
         }
         startPostponedEnterTransition()
     }
-
-    private fun findImages(): List<MainActivity.Image> {
-        val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-
-        val projections = arrayOf(
-            MediaStore.Images.ImageColumns._ID,
-            MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-            MediaStore.Images.ImageColumns.DATE_TAKEN,
-            MediaStore.Images.ImageColumns.DISPLAY_NAME
-        )
-
-        val findImages = HashMap<String, MainActivity.Image>()
-
-
-        requireActivity().contentResolver.query(
-            contentUri, projections, null, null,
-            "${MediaStore.Images.ImageColumns.DATE_TAKEN} ASC"
-        )?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val idIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID)
-                val displayNameIndex =
-                    cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DISPLAY_NAME)
-                val debugIndex =
-                    cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME)
-                do {
-                    val mediaId = cursor.getLong(idIndex)
-                    val filename = cursor.getString(displayNameIndex)
-                    val uri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        mediaId
-                    )
-                    val debug = cursor.getLong(debugIndex).toString()
-
-                    val image = MainActivity.Image(
-                        id = mediaId.toString(),
-                        name = filename,
-                        uri = uri,
-                        debug = debug,
-                    )
-                    findImages[mediaId.toString()] = image
-
-
-                } while (cursor.moveToNext())
-            }
-        }
-
-        return findImages.values.toList().sortedByDescending { it.name }
-    }
-
-
 }
 
