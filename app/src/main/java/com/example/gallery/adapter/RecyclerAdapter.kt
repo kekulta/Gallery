@@ -1,5 +1,6 @@
 package com.example.gallery.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +11,25 @@ import com.example.gallery.Image
 import com.example.gallery.MainActivity
 import com.example.gallery.R
 import com.example.gallery.RecyclerClickListener
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 
+class RecyclerAdapter(
+    private val images: List<Image>,
+    private val listener: RecyclerClickListener,
+    private val fragment: Fragment
+) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
-class RecyclerAdapter(private val images: List<Image>, private val listener: RecyclerClickListener, private val fragment: Fragment) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+    private val requestManager = Glide.with(fragment)
 
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
+        private val image: ImageView = itemView.findViewById(R.id.card_image)
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        private val image: ImageView = itemView.findViewById(R.id.smallImage)
         init {
             image.setOnClickListener(this)
         }
@@ -28,8 +41,26 @@ class RecyclerAdapter(private val images: List<Image>, private val listener: Rec
         }
 
         private fun setImage() {
-            image.setImageURI(images[adapterPosition].uri)
-            onLoaded()
+            requestManager.load(images[adapterPosition].uri).listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?, model: Any,
+                    target: Target<Drawable?>, isFirstResource: Boolean
+                ): Boolean {
+                    onLoaded()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    onLoaded()
+                    return false
+                }
+            }).into(image)
         }
 
         private fun onLoaded() {
@@ -43,7 +74,7 @@ class RecyclerAdapter(private val images: List<Image>, private val listener: Rec
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.frame_textview, viewGroup, false)
+            .inflate(R.layout.card_image, viewGroup, false)
 
         return ViewHolder(v)
     }

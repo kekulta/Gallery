@@ -7,4 +7,5 @@
     <string name="add_fragment">First Fragment</string>
     <string name="share_transition">Share Transition</string>
     <string name="image_fragment">Image fragment</string>
+    <string name="image_description">Image</string>
 </resources>

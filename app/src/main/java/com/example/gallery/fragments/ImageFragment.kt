@@ -1,5 +1,6 @@
 package com.example.gallery.fragments
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionInflater
@@ -11,6 +12,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.SharedElementCallback
 import androidx.core.view.ViewCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.gallery.MainActivity
 import com.example.gallery.R
 import com.example.gallery.TAG
@@ -25,7 +31,6 @@ class ImageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         arguments?.let {
             uri = it.getString(URI_PARAM)
         }
@@ -35,21 +40,45 @@ class ImageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
         image = inflater.inflate(R.layout.fragment_image, container, false) as ImageView
-        image.transitionName = uri
-        image.setImageURI(Uri.parse(uri))
-
         prepareTransitions()
+
+
+        postponeEnterTransition()
+        image.transitionName = uri
+
+        Glide.with(this)
+            .load(uri)
+            .listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+            })
+            .into(image)
 
         return image
     }
 
     private fun prepareTransitions() {
         sharedElementEnterTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-
+            TransitionInflater.from(context).inflateTransition(R.transition.image_shared_element_transition)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,6 +88,7 @@ class ImageFragment : Fragment() {
 
 
         heroImageView.setOnClickListener {
+            println(MainActivity.currentPosition)
             parentFragmentManager.popBackStack()
         }
     }

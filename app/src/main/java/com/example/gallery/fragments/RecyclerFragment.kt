@@ -1,15 +1,13 @@
 package com.example.gallery.fragments
 
 
-import android.app.SharedElementCallback
 import android.os.Bundle
-import android.transition.TransitionInflater
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +31,6 @@ class RecyclerFragment() : Fragment() {
 
         recyclerView = inflater.inflate(R.layout.fragment_recycler, container, false) as RecyclerView
         recyclerView.apply {
-            layoutManager = GridLayoutManager(activity, 3)
             adapter = RecyclerAdapter(ImagesSource.findImages(), Listener(), this@RecyclerFragment)
         }
 
@@ -51,7 +48,7 @@ class RecyclerFragment() : Fragment() {
 
         override fun onClick(image: Image, index: Int, itemImageView: View) {
 
-            val view = itemImageView.findViewById<ImageView>(R.id.smallImage)
+            val view = itemImageView.findViewById<ImageView>(R.id.card_image)
             MainActivity.currentPosition = index
 
             parentFragmentManager.commit {
