@@ -1,4 +1,4 @@
-package com.example.gallery
+package com.example.gallery.fragments
 
 import android.net.Uri
 import android.os.Bundle
@@ -9,27 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.app.SharedElementCallback
 import androidx.core.view.ViewCompat
+import com.example.gallery.MainActivity
+import com.example.gallery.R
+import com.example.gallery.TAG
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val URI_PARAM = "URI"
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ImageFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-
 class ImageFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var uri: String? = null
+
+    lateinit var image: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition =
-            TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.move)
 
         arguments?.let {
             uri = it.getString(URI_PARAM)
@@ -40,15 +35,28 @@ class ImageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_image, container, false)
+
+
+        image = inflater.inflate(R.layout.fragment_image, container, false) as ImageView
+        image.transitionName = uri
+        image.setImageURI(Uri.parse(uri))
+
+        prepareTransitions()
+
+        return image
+    }
+
+    private fun prepareTransitions() {
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val heroImageView = view.findViewById<ImageView>(R.id.hero_image)
-        Log.d(TAG, uri?:"null")
-        heroImageView.setImageURI(Uri.parse(uri))
-        ViewCompat.setTransitionName(heroImageView, "hero_image")
+        Log.d(TAG, uri ?: "null")
+
 
         heroImageView.setOnClickListener {
             parentFragmentManager.popBackStack()

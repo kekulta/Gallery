@@ -2,21 +2,19 @@ package com.example.gallery
 
 import android.Manifest
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
+import com.example.gallery.fragments.BlankFragment
+import com.example.gallery.adapter.ImagesSource
+import com.example.gallery.fragments.ImageFragment
+import com.example.gallery.fragments.RecyclerFragment
 
 
 const val TAG = "MyActivity"
@@ -24,6 +22,9 @@ const val TAG = "MyActivity"
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        var currentPosition = 0
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         val addFragmentButton = findViewById<Button>(R.id.addActivityButton)
         val deleteFragmentButton = findViewById<Button>(R.id.deleteActivityButton)
         val shareTransitionButton = findViewById<Button>(R.id.sharedTransitionButton)
-
+        ImagesSource.init(contentResolver)
 
 
         supportFragmentManager.commit {
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
         addFragmentButton.setOnClickListener {
 
-            if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is WhiteScreen) {
+            if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is RecyclerFragment) {
                 supportFragmentManager.commit {
                     setCustomAnimations(
                         R.anim.slide_in,
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                     )
                     setReorderingAllowed(true)
 
-                    remove(supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as WhiteScreen)
+                    remove(supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as RecyclerFragment)
                     add<BlankFragment>(R.id.fragmentContainerView)
                     addToBackStack("name")
                 }
@@ -68,31 +69,33 @@ class MainActivity : AppCompatActivity() {
                     )
                     setReorderingAllowed(true)
                     remove(supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as BlankFragment)
-                    add<WhiteScreen>(R.id.fragmentContainerView)
+                    add<RecyclerFragment>(R.id.fragmentContainerView)
                     addToBackStack("name")
                 }
             }
         }
 
         shareTransitionButton.setOnClickListener {
-            shareTransition()
+            //shareTransition()
 
     }
 
 
     }
-    private fun shareTransition() {
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is BlankFragment) {
-            val itemImageView = findViewById<ImageView>(R.id.item_image)
-            supportFragmentManager.commit {
-                addSharedElement(itemImageView, "hero_image")
-                replace(R.id.fragmentContainerView, ImageFragment.newInstance(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.circle_icons_image_svg) + '/' + resources.getResourceTypeName(R.drawable.circle_icons_image_svg) + '/' + resources.getResourceEntryName(R.drawable.circle_icons_image_svg)))
-                addToBackStack("image")
-            }
-        } else if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is ImageFragment) {
-            supportFragmentManager.popBackStack()
-        }
-    }
+//    private fun shareTransition() {
+//        if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is BlankFragment) {
+//            val itemImageView = findViewById<ImageView>(R.id.item_image)
+//
+//            supportFragmentManager.commit {
+//                addSharedElement(itemImageView, itemImageView.transitionName)
+//                replace(R.id.fragmentContainerView, ImageFragment.newInstance(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.circle_icons_image_svg) + '/' + resources.getResourceTypeName(R.drawable.circle_icons_image_svg) + '/' + resources.getResourceEntryName(R.drawable.circle_icons_image_svg)))
+//                addToBackStack("image")
+//            }
+//        } else if (supportFragmentManager.findFragmentById(R.id.fragmentContainerView) is ImageFragment) {
+//            supportFragmentManager.popBackStack()
+//        }
+//    }
+
     private fun runtimePermissions() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -109,7 +112,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    data class Image(val id: String, val name: String, val uri: Uri, val debug: String)
+
+
 
 }
 

@@ -1,12 +1,25 @@
-package com.example.gallery
+package com.example.gallery.adapter
 
 import android.content.ContentResolver
 import android.content.ContentUris
-import android.net.Uri
 import android.provider.MediaStore
+import com.example.gallery.Image
+import java.lang.IllegalStateException
 
-class ImagesSource (private val contentResolver: ContentResolver){
-    fun findImages(): List<MainActivity.Image> {
+object ImagesSource{
+    private lateinit var contentResolver: ContentResolver
+    var isInitialized: Boolean = false
+    private set
+
+
+    fun init(contentResolver: ContentResolver) {
+        ImagesSource.contentResolver = contentResolver
+        isInitialized = true
+    }
+
+    fun findImages(): List<Image> {
+        if (!isInitialized) throw IllegalStateException("ImageSource should be initialized with contentResolver before use")
+
         val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
         val projections = arrayOf(
@@ -16,7 +29,7 @@ class ImagesSource (private val contentResolver: ContentResolver){
             MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
 
-        val findImages = HashMap<String, MainActivity.Image>()
+        val findImages = HashMap<String, Image>()
 
 
         contentResolver.query(
@@ -38,7 +51,7 @@ class ImagesSource (private val contentResolver: ContentResolver){
                     )
                     val debug = cursor.getLong(debugIndex).toString()
 
-                    val image = MainActivity.Image(
+                    val image = Image(
                         id = mediaId.toString(),
                         name = filename,
                         uri = uri,
@@ -55,4 +68,3 @@ class ImagesSource (private val contentResolver: ContentResolver){
     }
 }
 
-data class Image(val id: String, val name: String, val uri: Uri)
